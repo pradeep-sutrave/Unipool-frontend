@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 
 function LogoMark({ size = 32 }) {
   return (
@@ -16,9 +17,9 @@ function LogoMark({ size = 32 }) {
 }
 
 const NAV_LINKS = [
-  { label: "Browse",      path: "/browse"   },
+  { label: "Browse", path: "/browse" },
   { label: "My Listings", path: "/listings" },
-  { label: "Messages",    path: "/messages" },
+  { label: "Messages", path: "/messages" },
 ];
 
 const ACTIONS = [
@@ -91,11 +92,11 @@ export default function Home() {
       axios.get(`${API}/api/messages/conversations`, { headers }).catch(() => ({ data: { conversations: [] } })),
     ]).then(([listingsRes, convsRes]) => {
       const listings = listingsRes.data.listings ?? [];
-      const convs    = convsRes.data.conversations ?? [];
+      const convs = convsRes.data.conversations ?? [];
       setStats({
-        listings:     listings.filter((l) => l.status === "AVAILABLE").length,
+        listings: listings.filter((l) => l.status === "AVAILABLE").length,
         transactions: convs.length,
-        messages:     convs.reduce((sum, c) => sum + (c.messages?.length ?? 0), 0),
+        messages: convs.reduce((sum, c) => sum + (c.messages?.length ?? 0), 0),
       });
     });
   }, []);
@@ -190,9 +191,9 @@ export default function Home() {
         {/* ── Stats row ── */}
         <div className="animate-fade-up-delay-1 grid grid-cols-3 gap-3 mb-10">
           {[
-            { value: stats.listings,     label: "Active listings"  },
-            { value: stats.transactions, label: "Conversations"    },
-            { value: stats.messages,     label: "Messages sent"    },
+            { value: stats.listings, label: "Active listings" },
+            { value: stats.transactions, label: "Conversations" },
+            { value: stats.messages, label: "Messages sent" },
           ].map(({ value, label }) => (
             <div
               key={label}

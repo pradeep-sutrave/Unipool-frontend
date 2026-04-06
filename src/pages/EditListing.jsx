@@ -3,20 +3,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AppNavbar from "../components/AppNavbar";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const CATEGORIES  = ["Textbooks", "Electronics", "Instruments", "Furniture", "Clothing", "Sports", "Stationery", "Other"];
-const CONDITIONS  = [
-  { value: "NEW",      label: "Brand New"  },
-  { value: "LIKE_NEW", label: "Like New"   },
-  { value: "GOOD",     label: "Good"       },
-  { value: "FAIR",     label: "Fair"       },
-  { value: "POOR",     label: "Poor"       },
+
+const CATEGORIES = ["Textbooks", "Electronics", "Instruments", "Furniture", "Clothing", "Sports", "Stationery", "Other"];
+const CONDITIONS = [
+  { value: "NEW", label: "Brand New" },
+  { value: "LIKE_NEW", label: "Like New" },
+  { value: "GOOD", label: "Good" },
+  { value: "FAIR", label: "Fair" },
+  { value: "POOR", label: "Poor" },
 ];
 const TYPES = [
-  { value: "SELL", label: "For Sale",     hint: "One-time transfer"  },
-  { value: "RENT", label: "For Rent",     hint: "Borrow by the day"  },
-  { value: "BOTH", label: "Sale & Rent",  hint: "Buyer decides"      },
+  { value: "SELL", label: "For Sale", hint: "One-time transfer" },
+  { value: "RENT", label: "For Rent", hint: "Borrow by the day" },
+  { value: "BOTH", label: "Sale & Rent", hint: "Buyer decides" },
 ];
 
 // ── Image thumbnail (existing, non-removable) ─────────────────────────────────
@@ -81,33 +82,33 @@ function Select({ children, ...props }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function EditListing() {
-  const { id }   = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const fileRef  = useRef();
+  const fileRef = useRef();
 
-  const [loading, setLoading]   = useState(true);
-  const [saving,  setSaving]    = useState(false);
-  const [error,   setError]     = useState("");
-  const [success, setSuccess]   = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   // Existing listing data
   const [existing, setExisting] = useState(null);
 
   // Form state
-  const [title,       setTitle]       = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category,    setCategory]    = useState("");
-  const [condition,   setCondition]   = useState("");
-  const [type,        setType]        = useState("SELL");
-  const [price,       setPrice]       = useState("");
-  const [rentPerDay,  setRentPerDay]  = useState("");
-  const [newFiles,    setNewFiles]    = useState([]);
+  const [category, setCategory] = useState("");
+  const [condition, setCondition] = useState("");
+  const [type, setType] = useState("SELL");
+  const [price, setPrice] = useState("");
+  const [rentPerDay, setRentPerDay] = useState("");
+  const [newFiles, setNewFiles] = useState([]);
 
   // Load existing listing
   useEffect(() => {
     const load = async () => {
       try {
-        const token    = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
         const { data } = await axios.get(`${API}/api/listings/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -139,11 +140,11 @@ export default function EditListing() {
   const removeNew = (idx) => setNewFiles((prev) => prev.filter((_, i) => i !== idx));
 
   const validate = () => {
-    if (!title.trim())       return "Title is required.";
-    if (title.length > 100)  return "Title must be 100 characters or less.";
+    if (!title.trim()) return "Title is required.";
+    if (title.length > 100) return "Title must be 100 characters or less.";
     if (!description.trim()) return "Description is required.";
-    if (!category)           return "Please select a category.";
-    if (!condition)          return "Please select a condition.";
+    if (!category) return "Please select a category.";
+    if (!condition) return "Please select a condition.";
     if ((type === "SELL" || type === "BOTH") && !price) return "Sale price is required.";
     if ((type === "RENT" || type === "BOTH") && !rentPerDay) return "Rent per day is required.";
     return null;
@@ -158,13 +159,13 @@ export default function EditListing() {
 
     try {
       const token = localStorage.getItem("token");
-      const form  = new FormData();
-      form.append("title",       title.trim());
+      const form = new FormData();
+      form.append("title", title.trim());
       form.append("description", description.trim());
-      form.append("category",    category);
-      form.append("condition",   condition);
-      form.append("type",        type);
-      if (type === "SELL" || type === "BOTH") form.append("price",      price);
+      form.append("category", category);
+      form.append("condition", condition);
+      form.append("type", type);
+      if (type === "SELL" || type === "BOTH") form.append("price", price);
       if (type === "RENT" || type === "BOTH") form.append("rentPerDay", rentPerDay);
       newFiles.forEach((f) => form.append("images", f));
 

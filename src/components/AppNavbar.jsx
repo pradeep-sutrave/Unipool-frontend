@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 
 function LogoMark({ size = 28 }) {
   return (
@@ -10,15 +11,15 @@ function LogoMark({ size = 28 }) {
       <circle cx="22" cy="32" r="16" fill="#111111" />
       <circle cx="42" cy="21" r="14" fill="#3D3580" />
       <circle cx="42" cy="43" r="14" fill="#2A2A2A" />
-      <circle cx="22" cy="32" r="7"  fill="#F5F5F5" />
+      <circle cx="22" cy="32" r="7" fill="#F5F5F5" />
     </svg>
   );
 }
 
 const NAV_LINKS = [
-  { label: "Browse",      path: "/browse"   },
+  { label: "Browse", path: "/browse" },
   { label: "My Listings", path: "/listings" },
-  { label: "Messages",    path: "/messages" },
+  { label: "Messages", path: "/messages" },
 ];
 
 // ── Notification dropdown ─────────────────────────────────────────────────────
@@ -113,25 +114,25 @@ function NotifDropdown({ notifs, onClose, onApprove, onDecline, approving }) {
 
 // ── Main navbar ───────────────────────────────────────────────────────────────
 export default function AppNavbar() {
-  const navigate     = useNavigate();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
-  const bellRef      = useRef();
+  const bellRef = useRef();
 
-  const raw      = localStorage.getItem("user");
-  const user     = raw ? JSON.parse(raw) : null;
+  const raw = localStorage.getItem("user");
+  const user = raw ? JSON.parse(raw) : null;
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
     : "U";
   const avatarSrc = user?.profilePicUrl ?? null;
 
-  const [open,      setOpen]     = useState(false); // bell dropdown open
-  const [notifs,    setNotifs]   = useState([]);    // pending requests as seller
+  const [open, setOpen] = useState(false); // bell dropdown open
+  const [notifs, setNotifs] = useState([]);    // pending requests as seller
   const [approving, setApproving] = useState(null); // id currently being approved
 
   // Load pending requests for the notification bell
   const fetchNotifications = async () => {
     try {
-      const token    = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
       if (!token) return;
       const { data } = await axios.get(`${API}/api/messages/conversations`, {
         headers: { Authorization: `Bearer ${token}` },

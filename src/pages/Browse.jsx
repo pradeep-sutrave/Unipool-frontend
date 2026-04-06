@@ -3,24 +3,25 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AppNavbar from "../components/AppNavbar";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const CATEGORIES  = ["All", "Textbooks", "Electronics", "Instruments", "Furniture", "Clothing", "Sports", "Stationery", "Other"];
-const TYPES       = [{ value: "All", label: "All" }, { value: "SELL", label: "For Sale" }, { value: "RENT", label: "For Rent" }, { value: "BOTH", label: "Sale & Rent" }];
-const CONDITIONS  = { NEW: "New", LIKE_NEW: "Like New", GOOD: "Good", FAIR: "Fair", POOR: "Poor" };
+const CATEGORIES = ["All", "Textbooks", "Electronics", "Instruments", "Furniture", "Clothing", "Sports", "Stationery", "Other"];
+const TYPES = [{ value: "All", label: "All" }, { value: "SELL", label: "For Sale" }, { value: "RENT", label: "For Rent" }, { value: "BOTH", label: "Sale & Rent" }];
+const CONDITIONS = { NEW: "New", LIKE_NEW: "Like New", GOOD: "Good", FAIR: "Fair", POOR: "Poor" };
 const SORT_OPTIONS = [{ value: "newest", label: "Newest first" }, { value: "price_asc", label: "Price: Low → High" }, { value: "price_desc", label: "Price: High → Low" }];
 
 // ── Category gradient palettes ────────────────────────────────────────────────
 const CAT_GRADIENTS = {
-  Textbooks:   "from-blue-900/60 to-blue-950",
+  Textbooks: "from-blue-900/60 to-blue-950",
   Electronics: "from-purple-900/60 to-purple-950",
   Instruments: "from-amber-900/60 to-amber-950",
-  Furniture:   "from-stone-800/60 to-stone-900",
-  Clothing:    "from-pink-900/60 to-pink-950",
-  Sports:      "from-green-900/60 to-green-950",
-  Stationery:  "from-cyan-900/60 to-cyan-950",
-  Other:       "from-zinc-800/60 to-zinc-900",
+  Furniture: "from-stone-800/60 to-stone-900",
+  Clothing: "from-pink-900/60 to-pink-950",
+  Sports: "from-green-900/60 to-green-950",
+  Stationery: "from-cyan-900/60 to-cyan-950",
+  Other: "from-zinc-800/60 to-zinc-900",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -29,9 +30,9 @@ function typeLabel(type) {
 }
 
 function formatPrice(listing) {
-  if (listing.type === "SELL")        return `₹${listing.price?.toLocaleString("en-IN")}`;
-  if (listing.type === "RENT")        return `₹${listing.rentPerDay}/day`;
-  if (listing.type === "BOTH")        return `₹${listing.price?.toLocaleString("en-IN")} · ₹${listing.rentPerDay}/day`;
+  if (listing.type === "SELL") return `₹${listing.price?.toLocaleString("en-IN")}`;
+  if (listing.type === "RENT") return `₹${listing.rentPerDay}/day`;
+  if (listing.type === "BOTH") return `₹${listing.price?.toLocaleString("en-IN")} · ₹${listing.rentPerDay}/day`;
   return "—";
 }
 
@@ -142,13 +143,13 @@ function SkeletonCard() {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function Browse() {
   const navigate = useNavigate();
-  const [listings, setListings]         = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [search, setSearch]             = useState("");
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [debouncedSearch, setDebounced] = useState("");
-  const [activeType, setActiveType]     = useState("All");
+  const [activeType, setActiveType] = useState("All");
   const [activeCategory, setActiveCat] = useState("All");
-  const [sort, setSort]                 = useState("newest");
+  const [sort, setSort] = useState("newest");
 
   // Debounce search
   useEffect(() => {
@@ -160,9 +161,9 @@ export default function Browse() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (debouncedSearch)              params.set("search",    debouncedSearch);
-      if (activeType !== "All")         params.set("type",      activeType);
-      if (activeCategory !== "All")     params.set("category",  activeCategory);
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (activeType !== "All") params.set("type", activeType);
+      if (activeCategory !== "All") params.set("category", activeCategory);
       params.set("sort", sort);
 
       const { data } = await axios.get(`${API}/api/listings?${params}`);

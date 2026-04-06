@@ -3,20 +3,21 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AppNavbar from "../components/AppNavbar";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const CATEGORIES  = ["Textbooks", "Electronics", "Instruments", "Furniture", "Clothing", "Sports", "Stationery", "Other"];
-const CONDITIONS  = [
-  { value: "NEW",      label: "Brand New",  desc: "Never used, original packaging" },
-  { value: "LIKE_NEW", label: "Like New",   desc: "Used once or twice, no signs of wear" },
-  { value: "GOOD",     label: "Good",       desc: "Light use, minor wear" },
-  { value: "FAIR",     label: "Fair",       desc: "Visible wear but fully functional" },
-  { value: "POOR",     label: "Poor",       desc: "Heavy wear, may have defects" },
+
+const CATEGORIES = ["Textbooks", "Electronics", "Instruments", "Furniture", "Clothing", "Sports", "Stationery", "Other"];
+const CONDITIONS = [
+  { value: "NEW", label: "Brand New", desc: "Never used, original packaging" },
+  { value: "LIKE_NEW", label: "Like New", desc: "Used once or twice, no signs of wear" },
+  { value: "GOOD", label: "Good", desc: "Light use, minor wear" },
+  { value: "FAIR", label: "Fair", desc: "Visible wear but fully functional" },
+  { value: "POOR", label: "Poor", desc: "Heavy wear, may have defects" },
 ];
 const TYPES = [
-  { value: "SELL", label: "For Sale",        icon: "🏷️", desc: "One-time purchase" },
-  { value: "RENT", label: "For Rent",        icon: "📅", desc: "Recurring rental" },
-  { value: "BOTH", label: "Sale & Rent",     icon: "🔄", desc: "Both options" },
+  { value: "SELL", label: "For Sale", icon: "🏷️", desc: "One-time purchase" },
+  { value: "RENT", label: "For Rent", icon: "📅", desc: "Recurring rental" },
+  { value: "BOTH", label: "Sale & Rent", icon: "🔄", desc: "Both options" },
 ];
 
 // ── Image upload preview ───────────────────────────────────────────────────────
@@ -125,17 +126,17 @@ const inputClass = "w-full bg-surface border border-border rounded-xl px-4 py-3 
 export default function NewListing() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    title:       "",
+    title: "",
     description: "",
-    category:    "",
-    type:        "SELL",
-    condition:   "",
-    price:       "",
-    rentPerDay:  "",
+    category: "",
+    type: "SELL",
+    condition: "",
+    price: "",
+    rentPerDay: "",
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
 
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -144,10 +145,10 @@ export default function NewListing() {
     setError("");
 
     // Client-side validation
-    if (!form.title.trim())       return setError("Title is required.");
+    if (!form.title.trim()) return setError("Title is required.");
     if (!form.description.trim()) return setError("Description is required.");
-    if (!form.category)           return setError("Please select a category.");
-    if (!form.condition)          return setError("Please select a condition.");
+    if (!form.category) return setError("Please select a category.");
+    if (!form.condition) return setError("Please select a condition.");
     if ((form.type === "SELL" || form.type === "BOTH") && !form.price)
       return setError("Please enter a sale price.");
     if ((form.type === "RENT" || form.type === "BOTH") && !form.rentPerDay)
@@ -155,7 +156,7 @@ export default function NewListing() {
 
     setLoading(true);
     try {
-      const token   = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
       const payload = new FormData();
       Object.entries(form).forEach(([k, v]) => { if (v) payload.append(k, v); });
       images.forEach((img) => payload.append("images", img));
@@ -175,8 +176,8 @@ export default function NewListing() {
     }
   };
 
-  const showPrice    = form.type === "SELL" || form.type === "BOTH";
-  const showRentDay  = form.type === "RENT" || form.type === "BOTH";
+  const showPrice = form.type === "SELL" || form.type === "BOTH";
+  const showRentDay = form.type === "RENT" || form.type === "BOTH";
 
   return (
     <div className="min-h-screen bg-bg text-primary">

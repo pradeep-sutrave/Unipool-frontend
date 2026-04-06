@@ -3,21 +3,22 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AppNavbar from "../components/AppNavbar";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 
 const STATUS_TABS = [
-  { value: "all",       label: "All" },
+  { value: "all", label: "All" },
   { value: "AVAILABLE", label: "Available" },
-  { value: "SOLD",      label: "Sold" },
-  { value: "RENTED",    label: "Rented" },
-  { value: "INACTIVE",  label: "Inactive" },
+  { value: "SOLD", label: "Sold" },
+  { value: "RENTED", label: "Rented" },
+  { value: "INACTIVE", label: "Inactive" },
 ];
 
 const STATUS_STYLE = {
   AVAILABLE: "text-green-400 bg-green-500/10 border-green-500/20",
-  SOLD:      "text-muted bg-border/30 border-border",
-  RENTED:    "text-amber-400 bg-amber-500/10 border-amber-500/20",
-  INACTIVE:  "text-muted/50 bg-border/20 border-border/50",
+  SOLD: "text-muted bg-border/30 border-border",
+  RENTED: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  INACTIVE: "text-muted/50 bg-border/20 border-border/50",
 };
 
 const TYPE_LABEL = { SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" };
@@ -90,7 +91,7 @@ function ListingCard({ listing, onStatusChange, onEdit }) {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       onStatusChange(listing.id, newStatus);
-    } catch { /* silent */}
+    } catch { /* silent */ }
     finally { setBusy(false); }
   };
 
@@ -164,17 +165,17 @@ function ListingCard({ listing, onStatusChange, onEdit }) {
 }
 
 export default function MyListings() {
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const [listings, setListings] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [tab, setTab]           = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState("all");
 
   useEffect(() => {
     const fetchMine = async () => {
       setLoading(true);
       try {
-        const token     = localStorage.getItem("token");
-        const { data }  = await axios.get(`${API}/api/listings/mine`, {
+        const token = localStorage.getItem("token");
+        const { data } = await axios.get(`${API}/api/listings/mine`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setListings(data.listings);
@@ -198,10 +199,10 @@ export default function MyListings() {
   const filtered = tab === "all" ? listings : listings.filter((l) => l.status === tab);
 
   const stats = {
-    total:     listings.length,
-    active:    listings.filter((l) => l.status === "AVAILABLE").length,
-    sold:      listings.filter((l) => l.status === "SOLD").length,
-    rented:    listings.filter((l) => l.status === "RENTED").length,
+    total: listings.length,
+    active: listings.filter((l) => l.status === "AVAILABLE").length,
+    sold: listings.filter((l) => l.status === "SOLD").length,
+    rented: listings.filter((l) => l.status === "RENTED").length,
   };
 
   return (
@@ -232,9 +233,9 @@ export default function MyListings() {
 
         {/* ── Stats ── */}
         <div className="animate-fade-up-delay-1 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <StatCard value={stats.total}  label="Total listings" />
+          <StatCard value={stats.total} label="Total listings" />
           <StatCard value={stats.active} label="Available" />
-          <StatCard value={stats.sold}   label="Sold" />
+          <StatCard value={stats.sold} label="Sold" />
           <StatCard value={stats.rented} label="Rented" />
         </div>
 

@@ -4,14 +4,15 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import AppNavbar from "../components/AppNavbar";
 
-const API    = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const SOCKET = API;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function timeAgo(dateStr) {
   const diff = (Date.now() - new Date(dateStr)) / 1000;
-  if (diff < 60)    return "just now";
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   return new Date(dateStr).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
@@ -29,18 +30,18 @@ function Avatar({ user, size = "w-10 h-10", text = "text-sm" }) {
 
 // ── Status styling helpers ────────────────────────────────────────────────────
 const STATUS_CONFIG = {
-  PENDING:   { text: "Pending",   dot: "bg-amber-400",  badge: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
-  ACTIVE:    { text: "Approved",  dot: "bg-green-400",  badge: "text-green-400 bg-green-500/10 border-green-500/20" },
-  COMPLETED: { text: "Completed", dot: "bg-blue-400",   badge: "text-blue-400 bg-blue-500/10 border-blue-500/20"   },
-  CANCELLED: { text: "Cancelled", dot: "bg-muted",      badge: "text-muted bg-surface border-border"               },
+  PENDING: { text: "Pending", dot: "bg-amber-400", badge: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+  ACTIVE: { text: "Approved", dot: "bg-green-400", badge: "text-green-400 bg-green-500/10 border-green-500/20" },
+  COMPLETED: { text: "Completed", dot: "bg-blue-400", badge: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+  CANCELLED: { text: "Cancelled", dot: "bg-muted", badge: "text-muted bg-surface border-border" },
 };
 
 // ── Conversation list item ────────────────────────────────────────────────────
 function ConvItem({ conv, currentUserId, isActive, onClick }) {
   const isBuyer = conv.buyerId === currentUserId;
-  const other   = isBuyer ? conv.listing?.seller : conv.buyer;
+  const other = isBuyer ? conv.listing?.seller : conv.buyer;
   const lastMsg = conv.messages?.[0];
-  const sc      = STATUS_CONFIG[conv.status] ?? STATUS_CONFIG.PENDING;
+  const sc = STATUS_CONFIG[conv.status] ?? STATUS_CONFIG.PENDING;
 
   return (
     <button
@@ -90,9 +91,9 @@ function MessageBubble({ msg, currentUserId }) {
 // ── Request / Approval panel ──────────────────────────────────────────────────
 function RequestPanel({ conv, currentUserId, onStatusChange }) {
   const [loading, setLoading] = useState(false);
-  const [err, setErr]         = useState("");
+  const [err, setErr] = useState("");
 
-  const isBuyer  = conv.buyerId === currentUserId;
+  const isBuyer = conv.buyerId === currentUserId;
   const isSeller = conv.listing?.seller?.id === currentUserId;
   const { status } = conv;
 
@@ -281,13 +282,13 @@ function NoChatSelected() {
 function ChatPanel({ conv, currentUserId, socket, onStatusChange }) {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
-  const [input,    setInput]    = useState("");
-  const [sending,  setSending]  = useState(false);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
   const endRef = useRef(null);
-  const token  = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   const isBuyer = conv.buyerId === currentUserId;
-  const other   = isBuyer ? conv.listing?.seller : conv.buyer;
+  const other = isBuyer ? conv.listing?.seller : conv.buyer;
 
   // Load messages + join socket room
   useEffect(() => {
@@ -334,9 +335,9 @@ function ChatPanel({ conv, currentUserId, socket, onStatusChange }) {
     try {
       const optimistic = {
         id: `opt-${Date.now()}`,
-        content:   text,
-        senderId:  currentUserId,
-        sender:    { id: currentUserId },
+        content: text,
+        senderId: currentUserId,
+        sender: { id: currentUserId },
         createdAt: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, optimistic]);
@@ -439,13 +440,13 @@ export default function Messages() {
   const [searchParams] = useSearchParams();
   const convParam = searchParams.get("conv");
 
-  const raw  = localStorage.getItem("user");
+  const raw = localStorage.getItem("user");
   const user = raw ? JSON.parse(raw) : null;
 
   const [conversations, setConvs] = useState([]);
-  const [activeConv,    setActive]  = useState(null);
-  const [loading,       setLoading] = useState(true);
-  const [socket,        setSocket]  = useState(null);
+  const [activeConv, setActive] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [socket, setSocket] = useState(null);
 
   // Connect socket
   useEffect(() => {
@@ -458,7 +459,7 @@ export default function Messages() {
   useEffect(() => {
     const load = async () => {
       try {
-        const token    = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
         const { data } = await axios.get(`${API}/api/messages/conversations`, {
           headers: { Authorization: `Bearer ${token}` },
         });

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AppNavbar from "../components/AppNavbar";
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 
 const COND = { NEW: "Brand New", LIKE_NEW: "Like New", GOOD: "Good", FAIR: "Fair", POOR: "Poor" };
 const TYPE_BADGE = {
@@ -12,14 +13,14 @@ const TYPE_BADGE = {
   BOTH: "text-purple bg-purple/10 border-purple/20",
 };
 const CAT_GRADIENTS = {
-  Textbooks:   "from-blue-900/40 to-blue-950",
+  Textbooks: "from-blue-900/40 to-blue-950",
   Electronics: "from-purple-900/40 to-purple-950",
   Instruments: "from-amber-900/40 to-amber-950",
-  Furniture:   "from-stone-800/40 to-stone-900",
-  Clothing:    "from-pink-900/40 to-pink-950",
-  Sports:      "from-green-900/40 to-green-950",
-  Stationery:  "from-cyan-900/40 to-cyan-950",
-  Other:       "from-zinc-800/40 to-zinc-900",
+  Furniture: "from-stone-800/40 to-stone-900",
+  Clothing: "from-pink-900/40 to-pink-950",
+  Sports: "from-green-900/40 to-green-950",
+  Stationery: "from-cyan-900/40 to-cyan-950",
+  Other: "from-zinc-800/40 to-zinc-900",
 };
 
 function SellerAvatar({ seller, size = "w-11 h-11", text = "text-sm" }) {
@@ -55,18 +56,18 @@ function Skeleton() {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ListingDetail() {
-  const { id }   = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const raw         = localStorage.getItem("user");
+  const raw = localStorage.getItem("user");
   const currentUser = raw ? JSON.parse(raw) : null;
 
-  const [listing,    setListing]    = useState(null);
-  const [loading,    setLoading]    = useState(true);
-  const [notFound,   setNotFound]   = useState(false);
-  const [activeIdx,  setActiveIdx]  = useState(0);
+  const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [contacting, setContacting] = useState(false);
-  const [error,      setError]      = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -86,8 +87,8 @@ export default function ListingDetail() {
     setContacting(true);
     setError("");
     try {
-      const token    = localStorage.getItem("token");
-      const txType   = listing.type === "RENT" ? "RENT" : "BUY";
+      const token = localStorage.getItem("token");
+      const txType = listing.type === "RENT" ? "RENT" : "BUY";
       const { data } = await axios.post(
         `${API}/api/transactions`,
         { listingId: listing.id, type: txType },
@@ -126,7 +127,7 @@ export default function ListingDetail() {
   }
 
   const isSeller = currentUser?.id === listing.sellerId || currentUser?.id === listing.seller?.id;
-  const images   = listing.images ?? [];
+  const images = listing.images ?? [];
   const gradient = CAT_GRADIENTS[listing.category] ?? CAT_GRADIENTS.Other;
 
   return (
@@ -181,9 +182,8 @@ export default function ListingDetail() {
                   <button
                     key={i}
                     onClick={() => setActiveIdx(i)}
-                    className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                      i === activeIdx ? "border-purple" : "border-border hover:border-purple/40"
-                    }`}
+                    className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${i === activeIdx ? "border-purple" : "border-border hover:border-purple/40"
+                      }`}
                   >
                     <img src={img.url} alt="" className="w-full h-full object-cover" />
                   </button>
